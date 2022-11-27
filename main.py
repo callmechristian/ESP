@@ -1,100 +1,46 @@
 import pandas as pd
 import numpy as np
+import os
 
-
-df = pd.read_csv(r'data.csv')
-
-# one column has 1470 data entries
-# print(df[df.columns[1]]) # accessing values based on column
+df = pd.read_csv(r'data/data_processed.csv')
 
 allColumnsNames = np.array(df.columns)
 
-# predicting job satisfaction
-JSat = df[allColumnsNames[17]]
-df.drop(allColumnsNames[17], axis=1) # drop job satisfacftion column from input data
+# copying job satisfaction into new array
+JSat = df[allColumnsNames[17]].values
+# drop job satisfacftion column from input data
+df.drop(allColumnsNames[17], axis=1)
 
-# converting everything to floats...
-for columnName in allColumnsNames:
-    if columnName == allColumnsNames[1]:
-        df[columnName] = df[columnName].replace(to_replace="Yes", value=1, regex=True)
-        df[columnName] = df[columnName].replace(to_replace="No", value=0, regex=True)
-    if columnName == allColumnsNames[2]:
-        df[columnName] = df[columnName].replace(to_replace="Non-Travel", value=0, regex=True)
-        df[columnName] = df[columnName].replace(to_replace="Travel_Rarely", value=1, regex=True)
-        df[columnName] = df[columnName].replace(to_replace="Travel_Frequently", value=2, regex=True)
-    if columnName == allColumnsNames[4]:
-        df[columnName] = df[columnName].replace(to_replace="Sales", value=0, regex=True)
-        df[columnName] = df[columnName].replace(to_replace="Research & Development", value=1, regex=True)
-        df[columnName] = df[columnName].replace(to_replace="Human Resources", value=2, regex=True)
-    if columnName == allColumnsNames[7]:
-        df[columnName] = df[columnName].replace(to_replace="Life Sciences", value=0, regex=True)
-        df[columnName] = df[columnName].replace(to_replace="Medical", value=1, regex=True)
-        df[columnName] = df[columnName].replace(to_replace="Technical Degree", value=2, regex=True)
-        df[columnName] = df[columnName].replace(to_replace="Marketing", value=3, regex=True)
-        df[columnName] = df[columnName].replace(to_replace="Human Resources", value=4, regex=True)
-        df[columnName] = df[columnName].replace(to_replace="Other", value=5, regex=True)
-    if columnName == allColumnsNames[11]:
-        df[columnName] = df[columnName].replace(to_replace="Male", value=1, regex=True)
-        df[columnName] = df[columnName].replace(to_replace="Female", value=0, regex=True)
-    if columnName == allColumnsNames[15]:
-        df[columnName] = df[columnName].replace(to_replace="Life Sciences", value=0, regex=True)
-        df[columnName] = df[columnName].replace(to_replace="Medical", value=1, regex=True)
-        df[columnName] = df[columnName].replace(to_replace="Technical Degree", value=2, regex=True)
-        df[columnName] = df[columnName].replace(to_replace="Marketing", value=3, regex=True)
-        df[columnName] = df[columnName].replace(to_replace="Human Resources", value=4, regex=True)
-        df[columnName] = df[columnName].replace(to_replace="Other", value=5, regex=True)
-    
+# splitting inputs by row index
+df_training = df.iloc[:1400,:]
+df_validation = df.iloc[1400:,:]
+# splitting outputs by number
+JSat_training = JSat[:1400]
+JSat_validation = JSat[1400:]
+print("Shape of new inputs - {} , {}".format(df_training.shape, df_validation.shape))
+print("Shape of new outputs - {} , {}".format(JSat_training.shape, JSat_validation.shape))
 
-    
-## --------------------- viewing columns by index ----------------------- ##
-# count = 0
-# for i in allColumnsNames:
-#     count += 1
-#     print(count, ": ", i)
-## -----------------------------------------------------------------------##
-# 0 :  Age 
-# 1 :  Attrition
-# 2 :  BusinessTravel
-# 3 :  DailyRate
-# 4 :  Department
-# 5 :  DistanceFromHome
-# 6 :  Education
-# 7 :  EducationField
-# 8 :  EmployeeCount
-# 9 :  EmployeeNumber
-# 10 :  EnvironmentSatisfaction
-# 11 :  Gender
-# 12 :  HourlyRate
-# 13 :  JobInvolvement
-# 14 :  JobLevel
-# 15 :  JobRole
-# 16 :  JobSatisfaction
-# 17 :  MaritalStatus
-# 18 :  MonthlyIncome
-# 19 :  MonthlyRate
-# 20 :  NumCompaniesWorked 
-# 21 :  Over18
-# 22 :  OverTime
-# 23 :  PercentSalaryHike
-# 24 :  PerformanceRating
-# 25 :  RelationshipSatisfaction
-# 26 :  StandardHours
-# 27 :  StockOptionLevel
-# 28 :  TotalWorkingYears
-# 29 :  TrainingTimesLastYear
-# 30 :  WorkLifeBalance
-# 31 :  YearsAtCompany
-# 32 :  YearsInCurrentRole
-# 33 :  YearsSinceLastPromotion
-# 34 :  YearsWithCurrManager
-## -----------------------------------------------------------------------##
-
-tunableColumnsNames = np.array([allColumnsNames[2],allColumnsNames[3],allColumnsNames[12],allColumnsNames[14],allColumnsNames[18],allColumnsNames[19],allColumnsNames[26],allColumnsNames[27],allColumnsNames[29],allColumnsNames[33],allColumnsNames[34]])
+# tunableColumnsNames = np.array([allColumnsNames[2],allColumnsNames[3],allColumnsNames[12],allColumnsNames[14],allColumnsNames[18],allColumnsNames[19],allColumnsNames[26],allColumnsNames[27],allColumnsNames[29],allColumnsNames[33],allColumnsNames[34]])
 # print(tunableColumnsNames)
 
-
 # MLP
-from sklearn.neural_network import MLPClassifier
-classifier = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5,2), random_state=1)
-# classifier.fit(df,JSat)
+# from sklearn.neural_network import MLPClassifier
+# from sklearn import metrics
+# classifier = Random
+# classifier.fit(df_training,JSat_training)
+# JSat_predicted = classifier.predict(df_validation)
+# print(metrics.classification_report(JSat_validation,JSat_predicted))
+
+
+
+# Random Forests
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import make_classification
+
+# df_training, JSat_training = make_classification(n_estimators=500, bootstrap=False)
+clf = RandomForestClassifier(max_depth=None, random_state=None)
+clf.fit(df_training,JSat_training)
+JSat_predicted = clf.predict(df_validation)
+print(clf.score(df_validation, JSat_validation)) 
+
 # print(allColumnsNames)
