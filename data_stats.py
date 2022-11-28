@@ -31,11 +31,12 @@ def calculate_vif(df, features):
 
 corr = df.corr()
 
-print("                                ",corr.columns.values[1])
-print(corr[corr.columns.values[1]].to_string(index=True))
+c = 15
+print("                                ",corr.columns.values[c])
+print(corr[corr.columns.values[c]].to_string(index=True))
 
-sns.pairplot(df[df.columns.values[1:10]])
-plt.show()
+# sns.pairplot(df[df.columns.values[1:10]])
+# plt.show()
 
 # create data dir if it doesn't exist
 if not os.path.exists("out"):
