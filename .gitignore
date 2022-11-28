@@ -1,1 +1,4 @@
 *.pyc
+*.pb
+*.index
+variables.data-*
