@@ -8,11 +8,15 @@ df_categorical = pd.read_csv(r'data/data_categorical.csv')
 
 # --------------------------------------------------------------------------------------------------
 # copying job satisfaction into new array
-JSat = df['JobSatisfaction'].values
+JAtt = df['Attrition'].values
 
-df.drop(['JobSatisfaction'])
+df_good = pd.concat([df_categorical, df["MonthlyIncome"], df["BusinessTravel"], df["StockOptionLevel"], df["DistanceFromHome"]], axis=1)
+df = df_good.drop(['Attrition'], axis=1)
 
 # splitting inputs by row index
+# all data
+df_training = df.iloc[:1200,:]
+df_validation = df.iloc[1200:,:]
 # continous data
 df_training_continous = df_continous.iloc[:1200,:]
 df_validation_continous = df_continous.iloc[1200:,:]
@@ -20,25 +24,29 @@ df_validation_continous = df_continous.iloc[1200:,:]
 df_training_categorical = df_categorical.iloc[:1200,:]
 df_validation_categorical = df_categorical.iloc[1200:,:]
 # splitting outputs by number
-JSat_training = JSat[:1200]
-JSat_validation = JSat[1200:]
+JAtt_training = JAtt[:1200]
+JAtt_validation = JAtt[1200:]
 # --------------------------------------------------------------------------------------------------
 
 # Random Forests
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report
 
-# categorical data classifier
-clf_categorical = RandomForestClassifier(max_depth=None, random_state=None)
+# data classifier
+clf = RandomForestClassifier()
 
-clf_categorical.fit(df_training_categorical,JSat_training)
-acc_categorical = clf_categorical.score(df_validation_categorical, JSat_validation)
+clf.fit(df_training,JAtt_training)
+acc = clf.score(df_validation, JAtt_validation)
+acc_all = clf.score(df, JAtt)
 
-pred = clf_categorical.predict(df_validation_categorical)
+pred = clf.predict(df_validation)
+pred_all = clf.predict(df)
 
-print(classification_report(JSat_validation, pred))
+print(classification_report(JAtt_validation, pred))
+print(classification_report(JAtt, pred_all))
 
 # print results
-print('Categorical data accuracy: ', acc_categorical)
+print('Data accuracy: ', acc)
+print('Data accuracy on all samples:', acc_all)
 
 # print(allColumnsNames)
