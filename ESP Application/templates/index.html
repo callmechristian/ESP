@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ESP - Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link  href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.css" rel="stylesheet">
+  <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.7.0/sweetalert2.css">
+  <style>
+    body{
+      background-color: #343541;
+      font-family: 'Roboto';
+      color: white;
+    }
+    .bold-bg {
+      background-color: #202123;
+    }
+    .light-bg{
+      background-color: #444654;
+    }
+    .productName{
+      font-size: 2.92rem;
+      line-height: 110%;
+      margin: 1.9466666667rem 0 1.168rem 0;
+    }
+    .prim-btn{
+      color: ;
+    }
+    .btn{
+      color: white;
+    }
+    .btn:hover{
+      background-color: #444654;
+    }
+    textarea{
+      text-align: left;
+      color: white;
+      background-color: #444654;
+      border: 3px solid #202123;
+      height: 5rem;
+    }
+    .center, .center-align {
+      text-align: center;
+    }
+    .active{
+      border: 3px solid #202123;
+    }
+  </style>
+</head>
+<body>
+  <div class="bold-bg" style="margin: 0; padding: 15px;">
+      <div class="center-align">
+        <h1 style="margin: 25px 0 15px 0;">
+          Employee Satisfaction Project (ESP)
+        </h1>
+      </div>
+    </div>
+  <div class="container">
+    <div class="row" style="padding-top: 70px;">
+      <div class="col s12"  style="text-align: right;">
+        <a class="waves-effect btn bold-bg" id="samples" href="/samples" target="_blank">Samples</a>
+      </div>
+    </div>
+    <div class="row" style="padding-top: 10px;">
+      <div class="col s3 center-align">
+        <label for="data">
+          <h3 style="color: #9e9e9e;">Employee Data:</h3>
+        </label>
+      </div>
+      <div class="col s3"></div>
+      <div class="col s6 center-align">
+        <a class="waves-effect btn bold-bg disabled active" id="csvbtn" onclick="convert2csv()">CSV</a>
+        <a class="waves-effect btn bold-bg" id="jsonbtn" onclick="convert2json()">JSON</a>
+      </div>
+    </div>
+    <div class="row" style="">
+      <div class="col s12 center-align" style="padding-top: 45px;">
+        <textarea name="data" id="data" placeholder="Enter data here" spellcheck="false" style="padding: 23px;min-height: 210px;max-height: 460px;" autofocus="True" cols="100" rows="10"></textarea>
+      </div>
+    </div>
+    <div class="row" style="padding-top: 45px;padding-bottom: 45px;">
+      <div class="col s6 center-align">
+        <a class="waves-effect btn bold-bg" onclick="apiCall('attritionapi')">Check Attrition</a>
+      </div>
+      <div class="col s6 center-align">
+        <a class="waves-effect btn bold-bg" onclick="apiCall('satisfactionapi')">Check Job Satisfaction</a>
+      </div>
+    </div>
+  </div>
+  <script>
+
+    function convert2json(){
+      let data = document.getElementById("data").value;
+      let dataArray = data.split(",");
+      if(dataArray.length !== 35){
+        Swal.fire({
+          icon: 'error',
+          title: 'Data Missing',
+          text: 'Either some data is missing or the data field length exceeds the 35 field length'
+        });
+      }else{
+        // Convert to Json
+        let headers = ["Age ","Attrition ","BusinessTravel    ","DailyRate ","Department             ","DistanceFromHome ","Education ","EducationField   ","EmployeeCount ","EmployeeNumber ","EnvironmentSatisfaction ","Gender ","HourlyRate ","JobInvolvement ","JobLevel ","JobRole                   ","JobSatisfaction ","MaritalStatus ","MonthlyIncome ","MonthlyRate ","NumCompaniesWorked ","Over18 ","OverTime ","PercentSalaryHike ","PerformanceRating ","RelationshipSatisfaction ","StandardHours ","StockOptionLevel ","TotalWorkingYears ","TrainingTimesLastYear ","WorkLifeBalance ","YearsAtCompany ","YearsInCurrentRole ","YearsSinceLastPromotion ","YearsWithCurrManager"];
+
+        let jdata = {};
+        for(let i=0; i<35; i++){
+          jdata[headers[i].trim()] = dataArray[i].trim();
+        }
+        // console.log(jdata);
+        document.getElementById("data").value = JSON.stringify(jdata, undefined, 4);
+        document.getElementById("data").style.height= "460px";
+        
+        document.getElementById("csvbtn").classList.remove("disabled");
+        document.getElementById("csvbtn").classList.remove("active");
+
+        document.getElementById("jsonbtn").classList.add("disabled");
+        document.getElementById("jsonbtn").classList.add("active");
+
+      }
+    }
+
+    function convert2csv(){
+      let data = document.getElementById("data").value;
+      try{
+        JSON.parse(data);
+      }
+      catch{
+        Swal.fire({
+          icon: 'error',
+          title: 'JSON Format Error',
+          text: 'The data is not in JSON Format'
+        });
+        return 0;
+      }
+
+      let csvString = "";
+
+      for(let i=0;i<35;i++){
+        csvString = csvString + Object.values(JSON.parse(data))[i] + ", ";
+      }
+
+      csvString = csvString.slice(0, -2);
+
+      document.getElementById("data").value = csvString; 
+
+      document.getElementById("csvbtn").classList.add("disabled");
+      document.getElementById("csvbtn").classList.add("active");
+
+      document.getElementById("jsonbtn").classList.remove("disabled");
+      document.getElementById("jsonbtn").classList.remove("active");
+
+      document.getElementById("data").style.height= "210px";
+    }
+
+    function prettyPrint() {
+      if(document.getElementById("csvbtn").classList.contains("active")){
+        let ugly = document.getElementById('data').value.split(",");
+        let pretty = "";
+        for(let i=0;i<35;i++){
+          pretty = pretty + ugly[i].trim() + ", ";
+        }
+        pretty = pretty.slice(0, -2);
+        document.getElementById('data').value = pretty;
+      }
+    }
+
+    function apiCall(api){
+      if(document.getElementById("csvbtn").classList.contains("active")){
+        convert2json();
+      }
+
+      let csv = document.getElementById("data").value;
+
+      try{
+        JSON.parse(csv);
+      }
+      catch{
+        Swal.fire({
+          icon: 'error',
+          title: 'JSON Format Error',
+          text: 'The data is not in JSON Format'
+        });
+        return 0;
+      }
+
+      let url = "http://127.0.0.1:5000/"+api;
+      let call = "";
+
+      if(api === "attritionapi"){
+        call = "Attrition";
+      }else if(api === "satisfactionapi"){
+        call = "Job Satisfaction";
+      }
+
+      let xhr = new XMLHttpRequest();
+      xhr.open("POST", url);
+      xhr.setRequestHeader("Accept", "application/json");
+      xhr.setRequestHeader("Content-Type", "application/json");
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          // console.log(xhr.status);
+          let icon = "success";
+          let msg = "Good Job";
+          if(xhr.responseText.slice(-1)=="."){
+            icon = "success";
+            msg = "Good Job";
+          }else if(xhr.responseText.slice(-1)=="!"){
+            icon = "warning";
+            msg = "Attention needed!";
+          }else if(xhr.responseText.slice(-1)=="5"){
+            icon = "info";
+            msg = "Job satisfaction Rating";
+          }else {
+            icon = "question";
+          }
+          Swal.close();
+          Swal.fire(
+            msg,
+            xhr.responseText,
+            icon
+          );
+        }};
+
+      let data = csv;
+
+      // xhr.send(data);
+
+      // AJAX
+      Swal.fire({
+        title: 'Confirm the '+call+' prediction!',
+        showCancelButton: true,
+        confirmButtonText: 'Confirm',
+        showLoaderOnConfirm: true,
+        preConfirm: () => {
+
+          Swal.fire({
+                title: 'Please Wait !',
+                html: call+' is being predicted...',// add html attribute if you want or remove
+                allowOutsideClick: false,
+                showConfirmButton: false
+            });
+          xhr.send(data);
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+      });
+    }
+  </script>
+
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.7.0/sweetalert2.min.js"></script>
+
+</body>
+</html>
