@@ -18,7 +18,7 @@ If all the required libraries were already installed, you could see the web appl
 ```console
 http://127.0.0.1:5000/
 ```
-(This application uses the port number of 5000 and runs in the localhost - 127.0.0.1 If you have any other application running at the port 50000, you can modify them in the main.py file)
+(This application uses the port number of 5000 and runs in the localhost - 127.0.0.1 If you have any other application running at the same port, you can modify them in the main.py file)
 
 ### Application's Tech Stack
 ***
