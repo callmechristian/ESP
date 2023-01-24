@@ -3,6 +3,16 @@
 
 A project for Data Science in Business
 
+### Utilizing the available scripts
+The scripts in the main repository were used to identify a model and create statistics and insights for different models. While a little bit out of scope, and almost nothing could be included in the report, I'll give a short summary of what everything does.
+
+1. interpret_* scripts display computed statistics and insights from the generated models (no plots, because there's too many models)
+2. classifier_search* scripts implement a custom grid search for 32 or selected models
+3. data_* scripts work with the dataset, trim it, encode it, provide statistics about the input data
+4. randomized_search_* implement a randomized hyperparameter search for the specific models
+5. tf_keras_* implement a neural neural network model, but it was more expensive and provided worse results than simple algorithms
+
+random_forest_classifier.py implements the model used for the ESP Application
 
 ### Steps to recreate the working application: 
 ***
