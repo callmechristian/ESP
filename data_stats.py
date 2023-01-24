@@ -4,7 +4,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 df = pd.read_csv(r'data/data_processed.csv')
-
+print(len(df.columns))
 # let's inspect our data
 # https://towardsdatascience.com/statistics-in-python-collinearity-and-multicollinearity-4cc4dcd82b3f
 
