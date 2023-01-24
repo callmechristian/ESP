@@ -10,6 +10,8 @@ df_categorical = pd.read_csv(r'data/data_categorical.csv')
 # copying job satisfaction into new array
 JSat = df['JobSatisfaction'].values
 
+df.drop(['JobSatisfaction'])
+
 # splitting inputs by row index
 # continous data
 df_training_continous = df_continous.iloc[:1200,:]
